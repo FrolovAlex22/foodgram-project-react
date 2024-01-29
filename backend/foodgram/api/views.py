@@ -6,8 +6,8 @@ from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from api.permissions import IsOwnerOrReadOnly
 from api.serializers import (RecipeListSerializer,
                              RecipeCreateUpdateSerializer,
-                             TagSerializer,
-                             IngredientSerializers)
+                             TagSerializer)
+                            #  IngredientSerializers)
 from recipes.models import Recipe, Tag, Ingredient
 
 
