@@ -38,6 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'rest_framework',
+    'rest_framework.authtoken',
+    'djoser',
+
     'recipes',
     'api',
     'users'
@@ -123,9 +127,30 @@ USE_TZ = True
 
 AUTH_USER_MODEL = 'users.User'
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json'
+}
+
+# Url для формирования ссылки на media
+MEDIA_URL = '/media/'
+# Место на в контейнере backend, где будет лежать медиа
+MEDIA_ROOT = '/app/media/'
+
+# Url для формирования ссылки на статику
 STATIC_URL = '/static/'
+# Место на в контейнере backend, где будет лежать статика, когда
+# ее соберем с помощью ./manage.py collectstatic
+STATIC_ROOT = '/app/static/'
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# Говорим djoser, что для логина нужна почта.
+DJOSER = {
+    'LOGIN_FIELD': 'email',
+    'PERMISSIONS': {
+        'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],
+        'user_list': ['rest_framework.permissions.AllowAny'],
+    }
+}
