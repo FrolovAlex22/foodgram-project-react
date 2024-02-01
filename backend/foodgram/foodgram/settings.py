@@ -145,16 +145,15 @@ REST_FRAMEWORK = {
     'TEST_REQUEST_DEFAULT_FORMAT': 'json'
 }
 
-# Url для формирования ссылки на media
 MEDIA_URL = '/media/'
 # Место на в контейнере backend, где будет лежать медиа
 MEDIA_ROOT = '/app/media/'
 
 # Url для формирования ссылки на статику
-STATIC_URL = '/static/'
+STATIC_URL = '/static/django/'
 # Место на в контейнере backend, где будет лежать статика, когда
 # ее соберем с помощью ./manage.py collectstatic
-STATIC_ROOT = '/app/static/'
+STATIC_ROOT = '/app/static_django/'
 
 
 # Говорим djoser, что для логина нужна почта.
