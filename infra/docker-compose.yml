@@ -34,7 +34,7 @@ services:
       # куда будет помещена собранная статика фронта.
       - static_frontend:/app/result_build/
 
-  nginx:
+  gateway:
     image: nginx:1.19.3
     ports:
       - "80:80"
