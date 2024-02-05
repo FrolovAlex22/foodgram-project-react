@@ -16,8 +16,6 @@ services:
   backend:
     image: falex22/foodgram_backend
     env_file: .env
-    # Именнованные тома для статики и медиа в контейнера django.
-    # Т.е. тут будет лежать статика и меди
     volumes:
       - static:/app/static_django/
       - media:/app/media/
@@ -28,8 +26,6 @@ services:
   frontend:
     image: falex22/foodgram_frontend
     volumes:
-      # Именнованый том. Место в контейнере
-      # куда будет помещена собранная статика фронта.
       - static_frontend:/app/result_build/
 
   gateway:
