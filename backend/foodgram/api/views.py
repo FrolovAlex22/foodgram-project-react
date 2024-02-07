@@ -6,7 +6,8 @@ from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from api.permissions import IsOwnerOrReadOnly
 from api.serializers import (RecipeListSerializer,
                              RecipeCreateUpdateSerializer,
-                             TagSerializer)
+                             TagSerializer,
+                             UserSerializer)
                             #  IngredientSerializers)
 from recipes.models import Recipe, Tag, Ingredient
 
@@ -23,6 +24,7 @@ class CustomUserViewSet(UserViewSet):
 
     Там все, что нам нужно. CRUD + action me и прочее. См. исходники.
     """
+    serializer_class = UserSerializer
 
 
 class RecipesViewSet(ModelViewSet):

@@ -2,6 +2,7 @@
 from rest_framework import serializers
 
 from recipes.models import Ingredient, RecipeIngredient, Recipe, Tag
+from users.models import User
 
 
 class RecipeIngredientSerializer(serializers.ModelSerializer):
@@ -116,8 +117,35 @@ class TagSerializer(serializers.ModelSerializer):
         model = Tag
 
 
-# class IngredientSerializers(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
+    """Сериализатор для User."""
 
-#     class Meta:
-#         model = Ingredient
+    is_subscribed = serializers.SerializerMethodField()
 
+    class Meta:
+        model = User
+        fields = [
+            "email",
+            "id",
+            "username",
+            "first_name",
+            "last_name",
+            "is_subscribed",
+        ]
+        extra_kwargs = {"password": {"write_only": True}}
+
+    def get_is_subscribed(self, obj):
+        user = self.context.get("request").user
+
+        if user.is_anonymous or (user == obj):
+            return False
+
+        return user.subscriptions.filter(author=obj).exists()
+
+    def create(self, validated_data):
+        user = User(
+            email=validated_data["email"], username=validated_data["username"]
+        )
+        user.set_password(validated_data["password"])
+        user.save()
+        return user
