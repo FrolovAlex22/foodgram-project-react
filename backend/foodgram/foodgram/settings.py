@@ -5,6 +5,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# constants
+USER_FIELD_LEN = 150
+PAGE_SIZE = 6
+
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY')
@@ -25,9 +30,11 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'djoser',
 
-    'recipes',
-    'api',
-    'users'
+    'recipes.apps.RecipesConfig',
+    'api.apps.ApiConfig',
+    'users.apps.UsersConfig',
+    # 'drf_yasg',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -64,22 +71,22 @@ WSGI_APPLICATION = 'foodgram.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB', 'postgres'),
-        'USER': os.getenv('POSTGRES_USER', 'postgres'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
-        'HOST': os.getenv('DB_HOST', ''),
-        'PORT': os.getenv('DB_PORT', 5432)
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.getenv('POSTGRES_DB', 'postgres'),
+#         'USER': os.getenv('POSTGRES_USER', 'postgres'),
+#         'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
+#         'HOST': os.getenv('DB_HOST', ''),
+#         'PORT': os.getenv('DB_PORT', 5432)
+#     }
+# }
 
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -110,10 +117,21 @@ USE_TZ = True
 AUTH_USER_MODEL = 'users.User'
 
 REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
     ),
-    'TEST_REQUEST_DEFAULT_FORMAT': 'json'
+
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
+
+    # 'DEFAULT_PAGINATION_CLASS': (
+    #     'rest_framework.pagination.LimitOffsetPagination'
+    # ),
+
+    # 'PAGE_SIZE': PAGE_SIZE
 }
 
 MEDIA_URL = '/media/'
@@ -126,6 +144,7 @@ STATIC_URL = '/static/django/'
 # ее соберем с помощью ./manage.py collectstatic
 STATIC_ROOT = '/app/static_django/'
 
+CSV_FILES_DIR = 'data'
 
 # Говорим djoser, что для логина нужна почта.
 DJOSER = {
