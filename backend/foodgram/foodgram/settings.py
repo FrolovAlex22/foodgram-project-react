@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# constants
 USER_FIELD_LEN = 150
 PAGE_SIZE = 6
 
@@ -33,7 +32,6 @@ INSTALLED_APPS = [
     'recipes.apps.RecipesConfig',
     'api.apps.ApiConfig',
     'users.apps.UsersConfig',
-    # 'drf_yasg',
     'django_filters',
 ]
 
@@ -66,10 +64,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
     'default': {
@@ -126,27 +120,16 @@ REST_FRAMEWORK = {
     ),
 
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
-
-    # 'DEFAULT_PAGINATION_CLASS': (
-    #     'rest_framework.pagination.LimitOffsetPagination'
-    # ),
-
-    # 'PAGE_SIZE': PAGE_SIZE
 }
 
 MEDIA_URL = '/media/'
-# Место на в контейнере backend, где будет лежать медиа
 MEDIA_ROOT = '/app/media/'
 
-# Url для формирования ссылки на статику
 STATIC_URL = '/static/django/'
-# Место на в контейнере backend, где будет лежать статика, когда
-# ее соберем с помощью ./manage.py collectstatic
 STATIC_ROOT = '/app/static_django/'
 
 CSV_FILES_DIR = 'data'
 
-# Говорим djoser, что для логина нужна почта.
 DJOSER = {
     'LOGIN_FIELD': 'email',
     'PERMISSIONS': {
