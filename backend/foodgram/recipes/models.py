@@ -246,7 +246,7 @@ class Recipe(models.Model):
         Ingredient,
         through='IngredientInRecipe',
         related_name='recipes',
-        verbose_name='Ингредиенты'
+        verbose_name='Ингредиенты',
     )
     tags = models.ManyToManyField(
         Tag,

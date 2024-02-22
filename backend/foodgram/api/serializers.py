@@ -1,11 +1,13 @@
 import base64
 import webcolors
 from django.core.files.base import ContentFile
+from django.db import transaction
 from djoser.serializers import UserCreateSerializer
 from djoser.serializers import UserSerializer
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
-from api.pagination import CustomPagination
+
+from foodgram.settings import RECIPES_LIMIT
 from recipes.models import (
     Favorite, Ingredient, IngredientInRecipe, Recipe,
     ShoppingCart, Tag, TagInRecipe
@@ -67,10 +69,10 @@ class CustomUserSerializer(UserSerializer):
         model = User
         fields = (
             "id",
+            "email",
             "username",
             "first_name",
             "last_name",
-            "email",
             "is_subscribed",
         )
 
@@ -90,16 +92,16 @@ class CustomUserCreateSerializer(UserCreateSerializer):
     class Meta:
         model = User
         fields = (
+            "email",
             "id",
             "username",
             "first_name",
             "last_name",
-            "email",
             "password",
         )
 
 
-class SubscriptionSerializer(CustomUserSerializer, CustomPagination):
+class SubscriptionSerializer(CustomUserSerializer):
     """Подписка."""
 
     email = serializers.ReadOnlyField(source="author.email")
@@ -126,12 +128,10 @@ class SubscriptionSerializer(CustomUserSerializer, CustomPagination):
 
     def get_recipes(self, obj):
         """Получение списка рецептов автора."""
-        from api.serializers import ShortRecipeSerializer
-
-        author_recipes = obj.author.recipes.all()
+        author_recipes = obj.author.recipes.all()[:RECIPES_LIMIT]
 
         if author_recipes:
-            serializer = ShortRecipeSerializer(
+            serializer = AdditionalForRecipeSerializer(
                 author_recipes,
                 context={"request": self.context.get("request")},
                 many=True,
@@ -259,7 +259,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
 
         if not ingredients:
             raise serializers.ValidationError(
-                    'Блюдо должно иметь хоть какой то ингредиент!'
+                'Блюдо должно иметь хоть какой то ингредиент!'
             )
 
         for element in ingredients:
@@ -316,19 +316,21 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
 
         ingredients = validated_data.pop('ingredients')
         tags = validated_data.pop('tags')
-
         user = self.context.get('request').user
         recipe = Recipe.objects.create(**validated_data, author=user)
         self.create_ingredients(ingredients, recipe)
         self.create_tags(tags, recipe)
         return recipe
 
+    @transaction.atomic
     def update(self, instance, validated_data):
         """Метод обновления модели"""
 
         IngredientInRecipe.objects.filter(recipe=instance).delete()
         TagInRecipe.objects.filter(recipe=instance).delete()
 
+        self.validate_ingredients(validated_data)
+        self.validate_tags(validated_data)
         self.create_ingredients(validated_data.pop('ingredients'), instance)
         self.create_tags(validated_data.pop('tags'), instance)
 
@@ -336,7 +338,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
 
 
 class AdditionalForRecipeSerializer(serializers.ModelSerializer):
-    """Дополнительный сериализатор для рецептов """
+    """Сериализатор для компактного отображения рецептов"""
 
     class Meta:
         """Мета-параметры сериализатора"""

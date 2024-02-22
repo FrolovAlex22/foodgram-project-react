@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 USER_FIELD_LEN = 150
-PAGE_SIZE = 6
+RECIPES_LIMIT = 2
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent

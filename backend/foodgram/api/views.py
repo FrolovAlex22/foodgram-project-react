@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from api.filters import IngredientFilter, RecipeFilter
-from api.pagination import CustomPagination
+from api.pagination import CustomPagination, SubscribePagination
 from api.permissions import IsAuthorOrReadOnly
 from api.serializers import (
     AddFavoritesSerializer,
@@ -62,7 +62,7 @@ class CustomUserViewSet(UserViewSet):
         permission_classes=(IsAuthenticated,),
     )
     def subscriptions(self, request):
-        """Список подписок пользователь."""
+        """Список подписок пользователя"""
         user = self.request.user
         queryset = user.follower.all()
         pages = self.paginate_queryset(queryset)
@@ -104,7 +104,7 @@ class CustomUserViewSet(UserViewSet):
                 user=user, author=author
             ).exists():
                 return Response(
-                    {"errors": "Вы уже отписаны!"},
+                    {"errors": "Вы не подписаны на этого пользователя!"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
@@ -151,12 +151,11 @@ class RecipeViewSet(ModelViewSet):
     filterset_class = RecipeFilter
 
     def get_serializer_class(self):
-        """Метод для вызова определенного сериализатора """
-
-        if self.action in ('list', 'retrieve'):
+        """Определяет какой сериализатор будет использоваться
+        для разных типов запроса."""
+        if self.request.method == 'GET':
             return RecipeSerializer
-        elif self.action in ('create', 'partial_update'):
-            return CreateRecipeSerializer
+        return CreateRecipeSerializer
 
     def get_serializer_context(self):
         """Метод для передачи контекста """
@@ -176,8 +175,13 @@ class RecipeViewSet(ModelViewSet):
         """Метод для управления избранными подписками """
 
         user = request.user
-        recipe = get_object_or_404(Recipe, id=pk)
         if request.method == 'POST':
+            if not Recipe.objects.filter(id=pk).exists():
+                return Response(
+                    {'errors': 'Вы пытаетесь добавить не существующий рецепт'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            recipe = get_object_or_404(Recipe, id=pk)
             if Favorite.objects.filter(user=user, recipe=recipe).exists():
                 return Response(
                     {'errors': f'Рецепт - \"{recipe.name}\" нельзя добавить,'
@@ -189,6 +193,7 @@ class RecipeViewSet(ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         if request.method == 'DELETE':
+            recipe = get_object_or_404(Recipe, id=pk)
             obj = Favorite.objects.filter(user=user, recipe=recipe)
             if obj.exists():
                 obj.delete()
@@ -209,9 +214,14 @@ class RecipeViewSet(ModelViewSet):
         """Метод для управления списком покупок"""
 
         user = request.user
-        recipe = get_object_or_404(Recipe, id=pk)
 
         if request.method == 'POST':
+            if not Recipe.objects.filter(id=pk).exists():
+                return Response(
+                    {'errors': 'Вы пытаетесь добавить не существующий рецепт!'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            recipe = get_object_or_404(Recipe, id=pk)
             if ShoppingCart.objects.filter(user=user, recipe=recipe).exists():
                 return Response(
                     {'errors': f'Повторно - \"{recipe.name}\" добавить нельзя,'
@@ -223,6 +233,7 @@ class RecipeViewSet(ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         if request.method == 'DELETE':
+            recipe = get_object_or_404(Recipe, id=pk)
             obj = ShoppingCart.objects.filter(user=user, recipe__id=pk)
             if obj.exists():
                 obj.delete()

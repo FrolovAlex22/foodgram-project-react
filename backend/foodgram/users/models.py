@@ -9,10 +9,12 @@ class User(AbstractUser):
     email = models.EmailField(
         max_length=254,
         unique=True,
+        db_index=True
     )
     username = models.CharField(
         max_length=150,
         unique=True,
+        db_index=True,
         validators=[
             RegexValidator(
                 regex=r'^[\w.@+-]+$',
