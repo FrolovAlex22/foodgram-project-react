@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from recipes.models import Recipe, Ingredient, RecipeIngredient, Favorite
+from recipes.models import Recipe, Ingredient, IngredientInRecipe, Favorite
 from users.models import User
 
 
@@ -14,7 +14,7 @@ class RecipeModelTestCase(TestCase):
 
     def test_ingredients(self):
         """Тест добавления ингредиентов в рецепт."""
-        recipe_ingredient = RecipeIngredient.objects.create(
+        recipe_ingredient = IngredientInRecipe.objects.create(
             recipe=self.recipe,
             ingredient=self.salt,
             amount=1)

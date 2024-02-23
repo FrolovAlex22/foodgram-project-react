@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from api.filters import IngredientFilter, RecipeFilter
-from api.pagination import CustomPagination, SubscribePagination
+from api.pagination import CustomPagination
 from api.permissions import IsAuthorOrReadOnly
 from api.serializers import (
     AddFavoritesSerializer,
@@ -218,7 +218,8 @@ class RecipeViewSet(ModelViewSet):
         if request.method == 'POST':
             if not Recipe.objects.filter(id=pk).exists():
                 return Response(
-                    {'errors': 'Вы пытаетесь добавить не существующий рецепт!'},
+                    {'errors':
+                     'Вы пытаетесь добавить не существующий рецепт!'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
             recipe = get_object_or_404(Recipe, id=pk)
