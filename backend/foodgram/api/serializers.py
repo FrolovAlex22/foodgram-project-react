@@ -283,7 +283,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
 
         if not tags:
             raise serializers.ValidationError(
-                    'Для создания рецепта нужно указать tag!'
+                'Для создания рецепта нужно указать tag!'
             )
 
         for tag in tags:
