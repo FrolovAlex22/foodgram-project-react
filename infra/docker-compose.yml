@@ -10,26 +10,23 @@ services:
   db:
     image: postgres:13.10
     env_file: .env
+    ports:
+      - 5432:5432
     volumes:
       - pg_data:/var/lib/postgresql/data
 
   backend:
     image: falex22/foodgram_backend
     env_file: .env
-    # Именнованные тома для статики и медиа в контейнера django.
-    # Т.е. тут будет лежать статика и меди
     volumes:
       - static:/app/static_django/
       - media:/app/media/
     depends_on:
       - db 
 
-
   frontend:
     image: falex22/foodgram_frontend
     volumes:
-      # Именнованый том. Место в контейнере
-      # куда будет помещена собранная статика фронта.
       - static_frontend:/app/result_build/
 
   gateway:
@@ -39,6 +36,7 @@ services:
     volumes:
       - static:/static_django/
       - media:/media/
+      - ../docs/:/usr/share/nginx/html/api/docs/
       - static_frontend:/static_frontend/
     depends_on:
       - backend
