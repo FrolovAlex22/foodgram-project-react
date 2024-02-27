@@ -4,8 +4,7 @@ from django.core.files.base import ContentFile
 from django.db import transaction
 from djoser.serializers import UserCreateSerializer
 from djoser.serializers import UserSerializer
-from rest_framework import serializers, status
-from rest_framework.response import Response
+from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
 from foodgram.settings import RECIPES_LIMIT, MIN_VALUE, MAX_VALUE
