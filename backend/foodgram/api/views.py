@@ -58,7 +58,7 @@ class CustomUserViewSet(UserViewSet):
 
     @action(
         detail=False,
-        methods=("get",),
+        methods=('get',),
         permission_classes=(IsAuthenticated,),
     )
     def subscriptions(self, request):
@@ -67,44 +67,36 @@ class CustomUserViewSet(UserViewSet):
         queryset = user.follower.all()
         pages = self.paginate_queryset(queryset)
         serializer = SubscriptionSerializer(
-            pages, many=True, context={"request": request}
+            pages, many=True, context={'request': request}
         )
         return self.get_paginated_response(serializer.data)
 
     @action(
         detail=True,
-        methods=("post", "delete"),
+        methods=('post', 'delete'),
     )
     def subscribe(self, request, id=None):
         """Подписка на автора"""
         user = self.request.user
         author = get_object_or_404(User, pk=id)
 
-        if user == author:
-            return Response(
-                {"errors": "Нельзя подписаться или отписаться от себя!"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        if self.request.method == "POST":
-            if Subscription.objects.filter(user=user, author=author).exists():
+        if self.request.method == 'POST':
+            if user.follower.filter(author=id):
                 return Response(
-                    {"errors": "Подписка уже оформлена!"},
+                    {'errors': 'Подписка уже оформлена!'},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
             queryset = Subscription.objects.create(author=author, user=user)
             serializer = SubscriptionSerializer(
-                queryset, context={"request": request}
+                queryset, context={'request': request}
             )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        if self.request.method == "DELETE":
-            if not Subscription.objects.filter(
-                user=user, author=author
-            ).exists():
+        if self.request.method == 'DELETE':
+            if not user.follower.filter(author=id):
                 return Response(
-                    {"errors": "Вы не подписаны на этого пользователя!"},
+                    {'errors': 'Вы не подписаны на этого пользователя!'},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
@@ -182,7 +174,7 @@ class RecipeViewSet(ModelViewSet):
                     status=status.HTTP_400_BAD_REQUEST
                 )
             recipe = get_object_or_404(Recipe, id=pk)
-            if Favorite.objects.filter(user=user, recipe=recipe).exists():
+            if user.favorites.filter(recipe=pk):
                 return Response(
                     {'errors': f'Рецепт - \"{recipe.name}\" нельзя добавить,'
                                f'он уже есть в избранном у пользователя.'},
@@ -194,7 +186,7 @@ class RecipeViewSet(ModelViewSet):
 
         if request.method == 'DELETE':
             recipe = get_object_or_404(Recipe, id=pk)
-            obj = Favorite.objects.filter(user=user, recipe=recipe)
+            obj = user.favorites.filter(recipe=pk)
             if obj.exists():
                 obj.delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
@@ -223,7 +215,7 @@ class RecipeViewSet(ModelViewSet):
                     status=status.HTTP_400_BAD_REQUEST
                 )
             recipe = get_object_or_404(Recipe, id=pk)
-            if ShoppingCart.objects.filter(user=user, recipe=recipe).exists():
+            if user.shopping_user.filter(recipe=pk):
                 return Response(
                     {'errors': f'Повторно - \"{recipe.name}\" добавить нельзя,'
                                f'он уже есть в списке покупок'},
@@ -235,7 +227,7 @@ class RecipeViewSet(ModelViewSet):
 
         if request.method == 'DELETE':
             recipe = get_object_or_404(Recipe, id=pk)
-            obj = ShoppingCart.objects.filter(user=user, recipe__id=pk)
+            obj = user.shopping_user.filter(recipe=pk)
             if obj.exists():
                 obj.delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
@@ -252,9 +244,9 @@ class RecipeViewSet(ModelViewSet):
         shopping_list = ''
         for ingredient in ingredients:
             shopping_list += (
-                f"{ingredient['ingredient__name']}  - "
-                f"{ingredient['sum']}"
-                f"({ingredient['ingredient__measurement_unit']})\n"
+                f'{ingredient["ingredient__name"]}  - '
+                f'{ingredient["sum"]}'
+                f'({ingredient["ingredient__measurement_unit"]})\n'
             )
         return shopping_list
 
