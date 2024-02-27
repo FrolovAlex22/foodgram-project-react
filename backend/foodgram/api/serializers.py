@@ -145,7 +145,7 @@ class SubscriptionSerializer(CustomUserSerializer):
         """Количество рецептов автора"""
 
         return obj.author.recipes.all().count()
-    
+
 
 class IngredientInRecipeSerializer(serializers.ModelSerializer):
     """Сериализатор для модели ингредиентов в рецепте"""
