@@ -1,3 +1,13 @@
+![Static Badge](https://img.shields.io/badge/Python-blue?logo=python&logoColor=%23F7DF1E)
+![Static Badge](https://img.shields.io/badge/Django-%23092E20?logo=django)
+![Static Badge](https://img.shields.io/badge/Django%20rest%20framework-red?logo=django&labelColor=%23092E20)
+![Static Badge](https://img.shields.io/badge/GitHub-%23181717?logo=github)
+![Static Badge](https://img.shields.io/badge/nginx-%23009639?logo=nginx)
+![Static Badge](https://img.shields.io/badge/JavaScript-%23F7DF1E?logo=javascript&labelColor=%23181717)
+![Static Badge](https://img.shields.io/badge/PostgreSQL-%234169E1?logo=postgresql&logoColor=white)
+![Static Badge](https://img.shields.io/badge/Docker-%232496ED?logo=docker&logoColor=white)
+![Static Badge](https://img.shields.io/badge/GitHub%20Actions-%232088FF?logo=githubactions&logoColor=white)
+
 ### Описание:
 
 Продуктовый помощник Foodgram.
